@@ -69,7 +69,6 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
             strcpy(mywatchers[watchCount -1 ].fullPath,temp);
         }
         free(temp);
-
     } 
     else if (i->mask & IN_CREATE)
         printf("::: File Was Created %s :::\n",i->name);
@@ -79,12 +78,16 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
         printf("::: File Was Deleted %s :::\n",i->name);
     else if (i->mask & IN_MODIFY)
         printf("::: File Was Modified %s :::\n",i->name);
-    //else if (i->mask & IN_ACCESS)
-    //    printf("::: File Was Accessed %s :::\n",i->name);
+    else if (i->mask & IN_OPEN)
+        printf("::: File Was Opened %s :::\n",i->name);
     else if (i->mask & IN_OPEN && i->mask & IN_ISDIR)
         printf("::: Directory Was Opened %s :::\n",i->name);
+    else if (i->mask & IN_CLOSE)
+        printf("::: File Was Closed %s :::\n",i->name);
+    else if (i->mask & IN_CLOSE && i->mask & IN_ISDIR)
+        printf("::: Directory Was Closed %s :::\n",i->name);
     else if (i->mask & IN_ATTRIB)
-        printf("::: Attributes for %s Was Modified %s :::\n",i->name);
+        printf("::: Attributes For %s Were Modified %s :::\n",i->name);
     }
     else
         return NULL;
