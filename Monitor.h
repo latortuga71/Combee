@@ -13,15 +13,13 @@ typedef struct WatchMe{
 int watchCount = 0;
 
 static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[MAX_PATHS]){
-    //printf(" wd =%2d; ",i->wd);
     if (i->len > 0){
+        printf("\n::: WatchDescriptor = %2d :::\n",i->wd);
     if (i->cookie > 0)
         printf("cookie = %4d; ",i->cookie);
     if (i->mask & IN_MOVE_SELF) printf("IN_MOVE_SELF %s\n",i->name);
     if (i->mask & IN_MOVED_FROM) printf("IN_MOVED_FROM %s\n",i->name);
     if (i->mask & IN_MOVED_TO) printf("IN_MOVED_TO %s\n",i->name);
-    //if (i->len > 0) printf("    name = %s\n",i->name);
-    // change this block below to change output
     /*
     printf("mask = ");
     if (i->mask & IN_ACCESS) printf("IN_ACCESS ");
@@ -40,16 +38,10 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
     if (i->mask & IN_OPEN) printf("IN_OPEN ");
     if (i->mask & IN_Q_OVERFLOW) printf("IN_Q_OVERFLOW ");
     if (i->mask & IN_UNMOUNT) printf("IN_UMOUNT ");
-
-    if (i->len > 0)
-    printf("    name = %s\n",i->name);
     */
     
     if (i->mask & IN_CREATE && i->mask & IN_ISDIR){
-        //printf(":::::::::::HEY:::::::::::%d\n",mywatchers[i->wd].id - 1);
         printf("\n::: DIRECTORY %s CREATED :::\n",i->name);
-        //printf("\n\n%s\n\n",mywatchers[i->wd - 1].fullPath);
-        //char* temp = NULL;
         char* temp = malloc(strlen(mywatchers[i->wd -1 ].fullPath) + i->len + 1);
         strcpy(temp,mywatchers[i->wd - 1].fullPath);
         strcat(temp,"/");
@@ -87,14 +79,9 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
     else if (i->mask & IN_CLOSE && i->mask & IN_ISDIR)
         printf("::: Directory Was Closed %s :::\n",i->name);
     else if (i->mask & IN_ATTRIB)
-        printf("::: Attributes For %s Were Modified %s :::\n",i->name);
+        printf("::: Attributes For %s Were Modified:::\n",i->name);
     }
     else
         return NULL;
 
-
-    
-     
 }
-
-//static void AddNewDirToWatch(struct inf)
