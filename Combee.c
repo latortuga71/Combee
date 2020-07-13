@@ -3,7 +3,6 @@
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 int main(int argc,char *argv[]){
-    // setting up variables
     int j;
     char buff[BUF_LEN] __attribute__((aligned(8)));
     ssize_t numRead;
@@ -11,14 +10,10 @@ int main(int argc,char *argv[]){
     struct inotify_event *event;
     int inotifyFd;
     int wd;
-    inotifyFd = inotify_init(); // returns FileDescriptor
-    // get list of files to watch
+    inotifyFd = inotify_init(); 
     char** paths = get_recursive_dirs(argv[1]);
 
-    Watcher mywatchers[10000];
-
-    //printf("%s\n\n",paths[0]);
-    //printf("%d\n",number_of_dirs);
+    Watcher mywatchers[MAX_PATHS];
 
     if (inotifyFd == -1){
         printf("Error Creating Inotify Instance! Exiting!\n");
@@ -41,8 +36,12 @@ int main(int argc,char *argv[]){
 
     } 
     
-    //printf("\n\n\n\n%d:::%s\n\n",mywatchers[0].id,mywatchers[0].fullPath);
-        // 
+    // free memory allocated by get_recursive_dirs
+    for (int z = 0;z < MAX_PATHS;z++){
+        free(paths[z]);
+    }
+    // no memory leaks :)
+        
     for (;;){  // infinte loop to read events forever
         numRead = read(inotifyFd,buff,BUF_LEN);
         if (numRead <= 0 ){
@@ -56,8 +55,6 @@ int main(int argc,char *argv[]){
             event = (struct inotify_event *) p; //cast to struct ptr 
             displayInotifyEvent(inotifyFd,event,mywatchers);
             
-            
-    
             p += sizeof(struct inotify_event) + event->len;
         }
         //break;

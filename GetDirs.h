@@ -56,7 +56,7 @@ char **get_recursive_dirs(const char *path){
 	int flags = FTW_DEPTH;
     int x;
     
-    for (x = 0;x < 10000; x++) { 
+    for (x = 0;x < MAX_PATHS; x++) { 
         list_of_dirs[x] = malloc(sizeof(char) * NAME_MAX + 1);
     }
 	//if (argc > 2 && strchr(argv[2], 'd') != NULL)

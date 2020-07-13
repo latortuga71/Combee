@@ -12,7 +12,7 @@ typedef struct WatchMe{
 
 int watchCount = 0;
 
-static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[1000]){
+static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[MAX_PATHS]){
     //printf(" wd =%2d; ",i->wd);
     if (i->len > 0){
     if (i->cookie > 0)
