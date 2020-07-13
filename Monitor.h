@@ -14,9 +14,13 @@ int watchCount = 0;
 
 static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[1000]){
     //printf(" wd =%2d; ",i->wd);
+    if (i->len > 0){
     if (i->cookie > 0)
         printf("cookie = %4d; ",i->cookie);
-
+    if (i->mask & IN_MOVE_SELF) printf("IN_MOVE_SELF %s\n",i->name);
+    if (i->mask & IN_MOVED_FROM) printf("IN_MOVED_FROM %s\n",i->name);
+    if (i->mask & IN_MOVED_TO) printf("IN_MOVED_TO %s\n",i->name);
+    //if (i->len > 0) printf("    name = %s\n",i->name);
     // change this block below to change output
     /*
     printf("mask = ");
@@ -39,7 +43,8 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
 
     if (i->len > 0)
     printf("    name = %s\n",i->name);
-    */   
+    */
+    
     if (i->mask & IN_CREATE && i->mask & IN_ISDIR){
         //printf(":::::::::::HEY:::::::::::%d\n",mywatchers[i->wd].id - 1);
         printf("\n::: DIRECTORY %s CREATED :::\n",i->name);
@@ -65,8 +70,25 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
         }
         free(temp);
 
-    } else if (i->mask & IN_CREATE)
-        printf("::: File Created %s :::\n",i->name);
+    } 
+    else if (i->mask & IN_CREATE)
+        printf("::: File Was Created %s :::\n",i->name);
+    else if (i->mask & IN_ISDIR && i->mask & IN_DELETE)
+        printf("::: Directory Was Deleted %s :::\n",i->name);
+    else if (i->mask & IN_DELETE)
+        printf("::: File Was Deleted %s :::\n",i->name);
+    else if (i->mask & IN_MODIFY)
+        printf("::: File Was Modified %s :::\n",i->name);
+    //else if (i->mask & IN_ACCESS)
+    //    printf("::: File Was Accessed %s :::\n",i->name);
+    else if (i->mask & IN_OPEN && i->mask & IN_ISDIR)
+        printf("::: Directory Was Opened %s :::\n",i->name);
+    else if (i->mask & IN_ATTRIB)
+        printf("::: Attributes for %s Was Modified %s :::\n",i->name);
+    }
+    else
+        return NULL;
+
 
     
      
