@@ -22,25 +22,30 @@ int number_of_dirs = 0;
 static int display_info(const char *fpath, const struct stat *sb,int tflag, struct FTW *ftwbuf){
 
     // this prints "f/d/sl" depth
+    /*
 	printf("%-3s %2d ", 
     (tflag == FTW_D) ?   "d"   : (tflag == FTW_DNR) ? "dnr" :
 	(tflag == FTW_DP) ?  "dp"  : (tflag == FTW_F) ?   "f" :
 	(tflag == FTW_NS) ?  "ns"  : (tflag == FTW_SL) ?  "sl" :
 	(tflag == FTW_SLN) ? "sln" : "???",
 	ftwbuf->level);
+    */
     // if error print --- FTW_NS error
+    /*
 	if (tflag == FTW_NS)
 		printf("-------");
     // if no error print size of file/dir
 	else
 		printf("%7jd", (intmax_t) sb->st_size);
+    */
 
     // prints (file path) (offset of filename from basename) 
-    printf("   %-40s\n",fpath);
+
+    //printf("   %-40s\n",fpath);
+
 	//printf("   %-40s %d %s\n",fpath, ftwbuf->base, fpath + ftwbuf->base);
-    
     if (tflag == FTW_D || tflag == FTW_DP){
-        printf("\n%s is a directory\n",fpath);
+        //printf("\n%s is a directory\n",fpath);
         strcpy(list_of_dirs[number_of_dirs++],fpath); 
     }
     
@@ -65,10 +70,10 @@ char **get_recursive_dirs(const char *path){
         perror("error nftw");
         exit(EXIT_FAILURE);
     }
-    printf("%d\n",number_of_dirs);
+    //printf("%d\n",number_of_dirs);
     for (int i = 0; i < number_of_dirs; i++ ){
-            printf("%d\n",i);
-            printf("%s",list_of_dirs[i]);
+            //printf("%d\n",i);
+            //printf("%s",list_of_dirs[i]);
     }
     return list_of_dirs;
 
