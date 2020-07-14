@@ -18,6 +18,9 @@ int post(char* destination,char *jsonData)
                 curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
                 curl_easy_setopt(curl,CURLOPT_TIMEOUT,5L); // 5 seconds before timeout
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L); // ignore ssl
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L); // ignore ssl
+                curl_easy_setopt(curl,CURLOPT_IPRESOLVE,CURL_IPRESOLVE_V4); 
 
                 res = curl_easy_perform(curl);
 

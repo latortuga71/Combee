@@ -16,11 +16,11 @@ int main(int argc,char *argv[]){
                 wvalue = optarg;
                 break;
             default:
-                printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
+                printf("Usage: Combee [full path]\nOptions:\n\t-w, https://127.0.0.1:8000\t ip address and port of webhook to post event to\n",argv[1]);
                 exit(1);
         }
     if (argc < 2){
-        printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
+        printf("Usage: Combee [full path]\nOptions:\n\t-w, https://127.0.0.1:8000\t ip address and port of webhook to post event to\n",argv[1]);
         exit(1);
     }
 
