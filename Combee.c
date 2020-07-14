@@ -16,10 +16,11 @@ int main(int argc,char *argv[]){
         switch(c){
             case 'w':
                 wflag = 1;
-                cvalue = optarg;
+                wvalue = optarg;
                 break;
             case 'o':
                 oflag = 1;
+                ovalue = optarg;
             default:
                 printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n\t-o, outfile\t output to file\n",argv[1]);
                 exit(1);
