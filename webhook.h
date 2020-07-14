@@ -10,7 +10,6 @@ int post(char* destination,char *jsonData)
         curl = curl_easy_init();
         if(curl) {
                 curl_easy_setopt(curl, CURLOPT_URL, destination);
-                //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "{\"title\" : \"The Title\"}");
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonData);
                 struct curl_slist *headers = NULL;
                 headers = curl_slist_append(headers, "Accept: application/json");

@@ -3,10 +3,7 @@
 #include <unistd.h>
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
-
-
 int main(int argc,char *argv[]){
-    //printf("%d\n",argc);
 
     int opterr = 0;
     int index;
@@ -18,23 +15,15 @@ int main(int argc,char *argv[]){
                 wflag = 1;
                 wvalue = optarg;
                 break;
-            case 'o':
-                oflag = 1;
-                ovalue = optarg;
             default:
-                printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n\t-o, outfile\t output to file\n",argv[1]);
+                printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
                 exit(1);
         }
     if (argc < 2){
-        printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n\t-o, outfile\t output to file\n",argv[1]);
+        printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
         exit(1);
     }
-    //for (index = optind;index < argc; index++){
-    //    printf("\n%s\n",argv[index]);
-    //}
-    //printf("\n%s\n",argv[optind]);
-    //printf("\n%s\n",cvalue);
-    //exit(1);
+
     int j;
     char buff[BUF_LEN] __attribute__((aligned(8)));
     ssize_t numRead;
@@ -49,19 +38,18 @@ int main(int argc,char *argv[]){
 
     if (inotifyFd == -1){
         printf("Error Creating Inotify Instance! Exiting!\n");
-        //return 1;
         exit(1);
     }
     
     for (int x = 0; x < number_of_dirs; x++){
         
-        wd = inotify_add_watch(inotifyFd,paths[x],IN_ALL_EVENTS); // adds all the files listed on argv as watches
+        wd = inotify_add_watch(inotifyFd,paths[x],IN_ALL_EVENTS); 
         mywatchers[x].id = wd;
         strcpy(mywatchers[x].fullPath,paths[x]);
         if (wd == -1){
             printf("Error Creating Inotify Watcher For %s Exiting!\n",paths[x]);
             return 1;
-            //exit(1);
+           
         }
         watchCount++;
         printf("\nWatching %s using Wd %d\n",paths[x],wd);
@@ -79,17 +67,15 @@ int main(int argc,char *argv[]){
         if (numRead <= 0 ){
             printf("Error Reading From Inotify FD Exiting....\n");
             return 1;
-            //exit(1);
         }
         //printf("Read %ld bytes from inotifiy fd \n",(long)numRead);
         /// process all events in buffer returned by read()
         for (p = buff; p < buff + numRead; ){
             event = (struct inotify_event *) p; //cast to struct ptr 
             displayInotifyEvent(inotifyFd,event,mywatchers);
-    
             p += sizeof(struct inotify_event) + event->len;
         }
-        //break;
+        
     }
    
 }
