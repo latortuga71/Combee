@@ -6,12 +6,9 @@ app = Flask(__name__)
 
 @app.route("/",methods = ["POST"])
 def post():
-    #headers = request.headers
-    #agent = headers.get("User-Agent")
     if request.is_json:
         content = request.get_json()
         print(content)
-        #print(jsonify({"message":"OK"}),200)
         return jsonify({"message":"OK"},200)
     else:
         return jsonify({"message":"ERROR Invalid Json"})
