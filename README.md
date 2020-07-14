@@ -4,8 +4,8 @@ Combee 1.0
 Recursively Monitor A HoneyPot Directory 
 Usage: Combee [full path to my honeypot] 
 Options: 
-        * -w, http(s)://127.0.0.1:8000     ip address/hostname and port of webhook to post event to 
-        * -o, log.txt      output file 
+         -w, http(s)://127.0.0.1:8000     ip address/hostname and port of webhook to post event to 
+         -o, log.txt      output file 
 ```
     000000000000000000000000000000
     00000(((**************(((00000
