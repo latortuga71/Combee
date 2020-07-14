@@ -1,14 +1,39 @@
 #include "GetDirs.h"
 #include "Monitor.h"
+#include <unistd.h>
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
+
+
 
 int main(int argc,char *argv[]){
     //printf("%d\n",argc);
-    if (argc < 2){
-        printf("Usage: Combee [full path]\n\tOptions -w, --webhook IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
 
+    int opterr = 0;
+    int index;
+    int c;
+
+    while ((c = getopt(argc,argv,"w:")) !=-1 )
+        switch(c){
+            case 'w':
+                wflag = 1;
+                cvalue = optarg;
+                break;
+            case 'o':
+                oflag = 1;
+            default:
+                printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n\t-o, outfile\t output to file\n",argv[1]);
+                exit(1);
+        }
+    if (argc < 2){
+        printf("Usage: Combee [full path]\nOptions:\n\t-w, IP:PORT\t ip address and port of webhook to post event to\n\t-o, outfile\t output to file\n",argv[1]);
+        exit(1);
     }
-    exit(1);
+    //for (index = optind;index < argc; index++){
+    //    printf("\n%s\n",argv[index]);
+    //}
+    //printf("\n%s\n",argv[optind]);
+    //printf("\n%s\n",cvalue);
+    //exit(1);
     int j;
     char buff[BUF_LEN] __attribute__((aligned(8)));
     ssize_t numRead;
@@ -17,7 +42,7 @@ int main(int argc,char *argv[]){
     int inotifyFd;
     int wd;
     inotifyFd = inotify_init(); 
-    char** paths = get_recursive_dirs(argv[1]);
+    char** paths = get_recursive_dirs(argv[optind]);
 
     Watcher mywatchers[MAX_PATHS];
 
@@ -60,7 +85,7 @@ int main(int argc,char *argv[]){
         for (p = buff; p < buff + numRead; ){
             event = (struct inotify_event *) p; //cast to struct ptr 
             displayInotifyEvent(inotifyFd,event,mywatchers);
-            
+    
             p += sizeof(struct inotify_event) + event->len;
         }
         //break;

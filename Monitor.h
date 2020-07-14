@@ -12,10 +12,16 @@ typedef struct WatchMe{
 } Watcher;
 
 int watchCount = 0;
+int wflag = 0;
+char *cvalue = NULL;
+int oflag = 0;
+char *ovalue = NULL;
 
 static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[MAX_PATHS]){
+    // if webhook flag == 1
 
     if (i->len > 0){
+        char *buff = malloc(sizeof(char) * 1024);
         time_t now;
         time(&now); 
         //printf("%s",ctime(&now));
@@ -49,8 +55,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
         }
         //else if (i->mask & IN_ACCESS)
         //    printf("%s ::: WatcherDescriptor %d ::: File/Directory Was Acccessed %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name); 
-        else if (i->mask & IN_CREATE)
+        else if (i->mask & IN_CREATE){
             printf("%s ::: WatcherDescriptor %d ::: File Was Created %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+            if (wflag == 1)
+                printf("CURL");
+        }
         else if (i->mask & IN_ISDIR && i->mask & IN_DELETE)
             printf("%s ::: WatcherDescriptor %d ::: Directory Was Deleted %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
         else if (i->mask & IN_DELETE)
