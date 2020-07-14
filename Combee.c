@@ -3,6 +3,12 @@
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 int main(int argc,char *argv[]){
+    //printf("%d\n",argc);
+    if (argc < 2){
+        printf("Usage: Combee [full path]\n\tOptions -w, --webhook IP:PORT\t ip address and port of webhook to post event to\n",argv[1]);
+
+    }
+    exit(1);
     int j;
     char buff[BUF_LEN] __attribute__((aligned(8)));
     ssize_t numRead;
