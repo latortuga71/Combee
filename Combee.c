@@ -4,7 +4,7 @@
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 int main(int argc,char *argv[]){
-
+    printf("Combee 1.0\nRecursively Monitor HoneyPots\n");
     int opterr = 0;
     int index;
     int c;
@@ -20,11 +20,11 @@ int main(int argc,char *argv[]){
                 ovalue = optarg;
                 break;
             default:
-                printf("Usage: Combee [full path]\nOptions:\n\t-w, https://127.0.0.1:8000\t ip address and port of webhook to post event to\n",argv[1]);
+                printf("Usage: Combee [full path]\nOptions:\n\t-w, http(s)://127.0.0.1:8000\t ip address/hostname and port of webhook to post event to\t-o, log.txt\t output file\n",argv[1]);
                 exit(1);
         }
     if (argc < 2){
-        printf("Usage: Combee [full path]\nOptions:\n\t-w, https://127.0.0.1:8000\t ip address and port of webhook to post event to\n",argv[1]);
+        printf("Usage: Combee [full path]\nOptions:\n\t-w, http(s)://127.0.0.1:8000\t ip address/hostname and port of webhook to post event to\n\t-o, log.txt\t output file\n",argv[1]);
         exit(1);
     }
 
