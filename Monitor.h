@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct WatchMe{
     int id;
@@ -13,13 +14,17 @@ typedef struct WatchMe{
 int watchCount = 0;
 
 static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[MAX_PATHS]){
+
     if (i->len > 0){
-        printf("\n::: WatchDescriptor = %2d :::\n",i->wd);
-    if (i->cookie > 0)
-        printf("cookie = %4d; ",i->cookie);
-    if (i->mask & IN_MOVE_SELF) printf("IN_MOVE_SELF %s\n",i->name);
-    if (i->mask & IN_MOVED_FROM) printf("IN_MOVED_FROM %s\n",i->name);
-    if (i->mask & IN_MOVED_TO) printf("IN_MOVED_TO %s\n",i->name);
+        time_t now;
+        time(&now); 
+        //printf("%s",ctime(&now));
+        //printf("\n::: WatchDescriptor = %2d :::\n",i->wd);
+        if (i->cookie > 0)
+            printf("cookie = %4d; ",i->cookie);
+        if (i->mask & IN_MOVE_SELF) printf("IN_MOVE_SELF %s\n",i->name);
+        if (i->mask & IN_MOVED_FROM) printf("IN_MOVED_FROM %s\n",i->name);
+        if (i->mask & IN_MOVED_TO) printf("IN_MOVED_TO %s\n",i->name);
     /*
     printf("mask = ");
     if (i->mask & IN_ACCESS) printf("IN_ACCESS ");
@@ -41,7 +46,7 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
     */
     
     if (i->mask & IN_CREATE && i->mask & IN_ISDIR){
-        printf("\n::: DIRECTORY %s CREATED :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: Directory %s/%s CREATED :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
         char* temp = malloc(strlen(mywatchers[i->wd -1 ].fullPath) + i->len + 1);
         strcpy(temp,mywatchers[i->wd - 1].fullPath);
         strcat(temp,"/");
@@ -63,23 +68,23 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
         free(temp);
     } 
     else if (i->mask & IN_CREATE)
-        printf("::: File Was Created %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: File Was Created %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_ISDIR && i->mask & IN_DELETE)
-        printf("::: Directory Was Deleted %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: Directory Was Deleted %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_DELETE)
-        printf("::: File Was Deleted %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: File Was Deleted %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_MODIFY)
-        printf("::: File Was Modified %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: File Was Modified %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_OPEN)
-        printf("::: File Was Opened %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: File Was Opened %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_OPEN && i->mask & IN_ISDIR)
-        printf("::: Directory Was Opened %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: Directory Was Opened %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_CLOSE)
-        printf("::: File Was Closed %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: File Was Closed %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_CLOSE && i->mask & IN_ISDIR)
-        printf("::: Directory Was Closed %s :::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: Directory Was Closed %s/%s :::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     else if (i->mask & IN_ATTRIB)
-        printf("::: Attributes For %s Were Modified:::\n",i->name);
+        printf("%s ::: WatcherDescriptor %d ::: ::: Attributes For %s/%s Were Modified:::\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
     }
     else
         return NULL;
