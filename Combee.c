@@ -9,11 +9,15 @@ int main(int argc,char *argv[]){
     int index;
     int c;
 
-    while ((c = getopt(argc,argv,"w:")) !=-1 )
+    while ((c = getopt(argc,argv,"w:o:")) !=-1 )
         switch(c){
             case 'w':
                 wflag = 1;
                 wvalue = optarg;
+                break;
+            case 'o':
+                oflag = 1;
+                ovalue = optarg;
                 break;
             default:
                 printf("Usage: Combee [full path]\nOptions:\n\t-w, https://127.0.0.1:8000\t ip address and port of webhook to post event to\n",argv[1]);
@@ -33,8 +37,15 @@ int main(int argc,char *argv[]){
     int wd;
     inotifyFd = inotify_init(); 
     char** paths = get_recursive_dirs(argv[optind]);
-
     Watcher mywatchers[MAX_PATHS];
+
+    printf("####%s####\n",wvalue);
+    printf("###%s###\n",ovalue);
+    /*
+    if (oflag == 1){
+        freopen("log3.txt","a+",stdout);
+    }
+    */
 
     if (inotifyFd == -1){
         printf("Error Creating Inotify Instance! Exiting!\n");
@@ -53,6 +64,7 @@ int main(int argc,char *argv[]){
         }
         watchCount++;
         printf("\nWatching %s using Wd %d\n",paths[x],wd);
+        
 
     } 
     

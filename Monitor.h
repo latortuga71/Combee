@@ -19,8 +19,23 @@ typedef struct WatchMe{
 int watchCount = 0;
 int wflag = 0;
 char *wvalue = NULL;
+int oflag = 0;
+char *ovalue = NULL;
+
+static FILE *WriteToFile(int flag,char *filename){
+    if (flag == 1){
+        FILE *fptr = fopen(filename,"a+");
+        if (fptr == NULL){
+            printf("ERROR OPENING FILE %s\n",ovalue);
+            return NULL; //error
+        }
+        return fptr;
+    }
+}
+
 
 static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatchers[MAX_PATHS]){
+
     if (i->len > 0){
         char *buff = malloc(sizeof(char) * 1024);
         time_t now;
@@ -33,6 +48,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Cookie ::: %4d ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,i->cookie,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         if (i->mask & IN_MOVE_SELF) 
             printf("%s ::: WatcherDescriptor %d ::: File Renamed ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -44,6 +64,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Moved From ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         if (i->mask & IN_MOVED_TO){
             printf("%s ::: WatcherDescriptor %d ::: File Was Moved To ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -53,6 +78,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Moved To ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         if (i->mask & IN_CREATE && i->mask & IN_ISDIR){
             printf("%s ::: WatcherDescriptor %d ::: Directory Was Created ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -61,6 +91,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 snprintf(data,1024,"{\"Time\" : \"%s\",\"WatchDescriptor\" : \"%d\", \"Message\" : \"Directory Was Created\", \"File\" : \"%s/%s\"}\0",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
                 post(wvalue,data);
                 free(data);
+            }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Directory Was Created ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
             }
             char* temp = malloc(strlen(mywatchers[i->wd -1 ].fullPath) + i->len + 1);
             strcpy(temp,mywatchers[i->wd - 1].fullPath);
@@ -88,6 +123,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Created ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         else if (i->mask & IN_ISDIR && i->mask & IN_DELETE){
             printf("%s ::: WatcherDescriptor %d ::: Directory Was Deleted ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -96,6 +136,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 snprintf(data,1024,"{\"Time\" : \"%s\",\"WatchDescriptor\" : \"%d\", \"Message\" : \"Directory Was Deleted\", \"File\" : \"%s/%s\"}\0",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
                 post(wvalue,data);
                 free(data);
+            }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Directory Was Deleted ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
             }
         }
         else if (i->mask & IN_DELETE){
@@ -106,6 +151,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Deleted ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         else if (i->mask & IN_MODIFY){
             printf("%s ::: WatcherDescriptor %d ::: File Was Modified ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -114,6 +164,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 snprintf(data,1024,"{\"Time\" : \"%s\",\"WatchDescriptor\" : \"%d\", \"Message\" : \"File Was Modified\", \"File\" : \"%s/%s\"}\0",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
                 post(wvalue,data);
                 free(data);
+            }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Modified ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
             }
         }
         else if (i->mask & IN_OPEN){
@@ -124,6 +179,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Opened ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         else if (i->mask & IN_OPEN && i->mask & IN_ISDIR){
             printf("%s ::: WatcherDescriptor %d ::: Directory Was Opened ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -132,6 +192,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 snprintf(data,1024,"{\"Time\" : \"%s\",\"WatchDescriptor\" : \"%d\", \"Message\" : \"Directory Was Opened\", \"File\" : \"%s/%s\"}\0",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
                 post(wvalue,data);
                 free(data);
+            }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Directory Was Opened ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
             }
         }
         else if (i->mask & IN_CLOSE){
@@ -142,6 +207,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: File Was Closed ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         else if (i->mask & IN_CLOSE && i->mask & IN_ISDIR){
             printf("%s ::: WatcherDescriptor %d ::: Directory Was Closed ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -151,6 +221,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 post(wvalue,data);
                 free(data);
             }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Directory Was Closed ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
+            }
         }
         else if (i->mask & IN_ATTRIB){
             printf("%s ::: WatcherDescriptor %d ::: Attributes Were Modified ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
@@ -159,6 +234,11 @@ static void displayInotifyEvent(int Fd,struct inotify_event *i,Watcher mywatcher
                 snprintf(data,1024,"{\"Time\" : \"%s\",\"WatchDescriptor\" : \"%d\", \"Message\" : \"Attributes Were Modified\", \"File\" : \"%s/%s\"}\0",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
                 post(wvalue,data);
                 free(data);
+            }
+            if (oflag == 1){
+                FILE *file = WriteToFile(oflag,ovalue);
+                fprintf(file,"%s ::: WatcherDescriptor %d ::: Attributes Were Modified ::: %s/%s\n",strtok(ctime(&now),"\n"),i->wd,mywatchers[i->wd -1 ].fullPath,i->name);
+                fclose(file);
             }
         }
     }
