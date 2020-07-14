@@ -4,7 +4,7 @@
 #define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 int main(int argc,char *argv[]){
-    printf("Combee 1.0\nRecursively Monitor HoneyPots\n");
+    printf("Combee 1.0\nRecursively Monitor A HoneyPot Directory\n");
     int opterr = 0;
     int index;
     int c;
@@ -38,14 +38,6 @@ int main(int argc,char *argv[]){
     inotifyFd = inotify_init(); 
     char** paths = get_recursive_dirs(argv[optind]);
     Watcher mywatchers[MAX_PATHS];
-
-    printf("####%s####\n",wvalue);
-    printf("###%s###\n",ovalue);
-    /*
-    if (oflag == 1){
-        freopen("log3.txt","a+",stdout);
-    }
-    */
 
     if (inotifyFd == -1){
         printf("Error Creating Inotify Instance! Exiting!\n");
